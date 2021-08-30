@@ -8,6 +8,7 @@ import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,6 +23,7 @@ import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toolbar
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -120,6 +122,15 @@ class TabsFragment: ScreenFragment() {
     toolbar.setTitle(R.string.application_name)
     // Move focus from SearchView to Toolbar
     toolbar.isFocusableInTouchMode = true
+
+    ViewCompat.setOnApplyWindowInsetsListener(toolbar) { view, insets ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        activity?.window?.decorView?.rootWindowInsets?.displayCutout?.let {
+          view.setPadding(view.paddingLeft, it.safeInsetTop, view.paddingRight, view.paddingBottom)
+        }
+      }
+      insets
+    }
 
     val searchView = FocusSearchView(toolbar.context)
     searchView.allowFocus = savedInstanceState?.getBoolean(STATE_SEARCH_FOCUSED) == true

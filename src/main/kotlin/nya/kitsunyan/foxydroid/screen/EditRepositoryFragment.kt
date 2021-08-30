@@ -19,6 +19,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toolbar
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable

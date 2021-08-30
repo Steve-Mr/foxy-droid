@@ -2,14 +2,21 @@ package nya.kitsunyan.foxydroid.screen
 
 import android.content.Context
 import android.content.Intent
+import android.hardware.display.DisplayManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.view.View
+import android.view.View.*
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import nya.kitsunyan.foxydroid.R
@@ -72,8 +79,10 @@ abstract class ScreenActivity: FragmentActivity() {
     setTheme(Preferences[Preferences.Key.Theme].getResId(resources.configuration))
     super.onCreate(savedInstanceState)
 
-    window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-      View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+    window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+    //window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+      //View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
     addContentView(FrameLayout(this).apply { id = R.id.main_content },
       ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
@@ -159,6 +168,15 @@ abstract class ScreenActivity: FragmentActivity() {
     if (fragmentStack.isNotEmpty()) {
       toolbar.navigationIcon = toolbar.context.getDrawableFromAttr(android.R.attr.homeAsUpIndicator)
       toolbar.setNavigationOnClickListener { onBackPressed() }
+      //toolbar.setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener(toolbar, insets))
+
+      setOnApplyWindowInsetsListener(toolbar){ view, insets ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          window.decorView.rootWindowInsets.displayCutout?.let{
+            view.setPadding(view.paddingLeft, it.safeInsetTop, view.paddingRight, view.paddingBottom) }
+        }
+        insets
+      }
     }
   }
 
